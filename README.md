@@ -16,7 +16,8 @@ The usage of JSSpider consists of passing a list of domains by using the pipe, j
 
 ```console
 foo@bar:~$ cat subdomains.txt | jsspider
-foo@bar:~$ cat subdomains.txt | jsspider > output
+foo@bar:~$ cat subdomains.txt | jsspider -o output.txt
+foo@bar:~$ cat subdomains.txt | jsspider > output.txt
 ```
 
 ## :balance_scale: Disclaim :spider:

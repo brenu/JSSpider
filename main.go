@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -22,7 +23,13 @@ func getFinalURL(domain string) string {
 	return resp.Request.URL.String()
 }
 
-func verifyDomain(waitGroup *sync.WaitGroup, domain string) bool {
+func verifyDomain(waitGroup *sync.WaitGroup, domain string, file *os.File) bool {
+	var hasOutputFile bool = false
+
+	if file != nil {
+		hasOutputFile = true
+	}
+
 	finalURL := getFinalURL(domain)
 
 	if finalURL == "" {
@@ -52,6 +59,10 @@ func verifyDomain(waitGroup *sync.WaitGroup, domain string) bool {
 		}
 
 		fmt.Println(path)
+
+		if hasOutputFile == true {
+			file.WriteString(path + "\n")
+		}
 	})
 
 	c.Visit(finalURL)
@@ -62,13 +73,28 @@ func verifyDomain(waitGroup *sync.WaitGroup, domain string) bool {
 }
 
 func main() {
+	var outputPath string
+
+	flag.StringVar(&outputPath, "o", "", "Path to the output file. Optional, and it uses an append approach, so that whenever you choose a file with content inside, it will not erase it.")
+	flag.Parse()
+
+	var file *os.File
+	var err error
+
+	if outputPath != "" {
+		file, err = os.OpenFile(outputPath, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	scanner := bufio.NewScanner(os.Stdin)
 	var waitGroup sync.WaitGroup
 
 	for scanner.Scan() {
 		waitGroup.Add(1)
-		go verifyDomain(&waitGroup, scanner.Text())
+		go verifyDomain(&waitGroup, scanner.Text(), file)
 	}
 
 	waitGroup.Wait()
