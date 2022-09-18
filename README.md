@@ -7,7 +7,7 @@ Tool that automatically navigates through websites in order to spot all of its .
 If you've got Go installed and configured, you can install JSSpider using the command below:
 
 ```console
-foo@bar:~$ go get -u github.com/brenu/jsspider
+foo@bar:~$ go install -v github.com/brenu/jsspider@latest
 ```
 
 ## :arrow_forward: Usage
